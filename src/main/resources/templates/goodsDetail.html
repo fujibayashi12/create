@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>商品詳細</title>
+	<link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+	<th:block th:replace="~{fragment.html :: header}"></th:block>
+
+	<div class="goods-detail">
+		<img th:src="${goods.imageUrl != null ? goods.imageUrl : '/images/default.jpg'}" alt="商品画像">
+		<h2 th:text="${goods.name}">商品名</h2>
+		<p class="price" th:text="'¥' + ${goods.price}">価格</p>
+		<p th:text="'価格: ' + ${goods.price} + '円'">価格</p>
+		<p th:text="'カテゴリー: ' + ${goods.category}">カテゴリー</p>
+
+		<!-- ✅ 購入オプション -->
+		<div class="product-info">
+			<h2 th:text="${goods.name}">商品名</h2>
+			<p class="price" th:text="'¥' + ${goods.price}">¥6,636</p>
+
+			<p class="points">66pt (1%) <a href="#">詳細はこちら</a></p>
+			<p class="shipping">無料配送 5月11日-12日にお届け</p>
+			<p class="location">配送先: 151-0071 <a href="#">詳細を見る</a></p>
+
+			<p class="stock-status">✅ 在庫あり。</p>
+
+			<label for="quantity">数量:</label>
+			<select id="quantity">
+				<option value="1">1</option>
+				<option value="2">2</option>
+				<option value="3">3</option>
+			</select>
+
+			<div class="purchase-options">
+						<!-- カートに追加ボタン -->
+						<form th:action="@{/cart/add}" method="post">
+							<!-- ここで userId を hidden で送る -->
+							<input type="hidden" name="goodsId" th:value="${goods.id}">
+							<th:block th:if="${user != null}">
+							    <input type="hidden" name="userId" th:value="${user.id}">
+							</th:block>
+							<button type="submit" class="cart-button">🛒 カートに追加</button>
+						</form>
+
+
+						<!-- 直接購入ボタン -->
+						<form th:action="@{/checkout}" method="post">
+							<input type="hidden" name="goodsId" th:value="${goods.id}">
+							<button type="submit" class="buy-now-button">💰 今すぐ購入</button>
+						</form>
+					</div>
+
+			<p class="seller-info">
+				出荷元: <b>FELICITY Beer&Water</b> <br>
+				販売元: <b>FELICITY Beer&Water</b>
+			</p>
+
+			<p class="rating">⭐⭐⭐⭐☆ (2209件の評価)</p>
+			<p class="payment-method">🔒 支払い方法: お客様情報を保護しています</p>
+
+			<button class="wishlist-button">➕ リストに追加</button>
+		</div>
+	</div>
+</body>
+
+</html>

@@ -1,0 +1,595 @@
+@charset "UTF-8";
+
+/* 🎨 全体のスタイル設定 */
+body {
+	font-family: Arial, sans-serif;
+	text-align: center;
+	background-color: #f9f9f9;
+	margin: 0;
+	padding: 0;
+}
+
+/* 🖋️ タイトル */
+h1 {
+	text-align: center;
+	color: #333;
+}
+
+/* 📄 フォームのスタイル */
+form {
+	display: flex;
+	flex-direction: column;
+}
+
+label {
+	font-weight: bold;
+	margin-bottom: 5px;
+}
+
+input {
+	padding: 10px;
+	margin-bottom: 15px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
+}
+
+/* 🔘 ボタンスタイル */
+button {
+	background-color: #007bff;
+	color: white;
+	padding: 10px;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 16px;
+}
+
+button:hover {
+	background-color: #0056b3;
+}
+
+/* 📊 テーブルのスタイル */
+table {
+	width: 100%;
+	border-collapse: collapse;
+	background-color: #fff;
+}
+
+th,
+td {
+	border: 1px solid #ddd;
+	padding: 10px;
+	text-align: center;
+}
+
+th {
+	background-color: #4CAF50;
+	color: white;
+}
+
+/* 🎭 ステータスの色設定 */
+.status-pending {
+	color: orange;
+}
+
+.status-completed {
+	color: green;
+}
+
+.status-cancelled {
+	color: red;
+}
+
+/* 🛒 商品リストのスタイル */
+.goods-container {
+	position: relative;
+	/* 🔥 商品を前面に */
+	z-index: 2;
+	/* 🔥 背景より前面に */
+	padding: 20px;
+	background: rgba(255, 255, 255, 0.8);
+	/* 🔥 半透明の背景を適用 */
+
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	/* 商品のサイズ調整 */
+	gap: 5px;
+	/* 商品間の隙間を調整 */
+	padding: 5px;
+	/* 全体の余白を削減 */
+	margin-top: 10%;
+}
+
+.goods-item {
+	background: #fff;
+	padding: 6px;
+	/* 内部の余白を減らす */
+	border-radius: 4px;
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	margin: 3px;
+	/* カードごとの余白を減らす */
+}
+
+.goods-item:hover {
+	transform: scale(1.02);
+	/* ホバー時の拡大を抑える */
+}
+
+.goods-item img {
+	width: 100%;
+	border-radius: 4px;
+}
+
+/* 📄 ページネーション */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.page-link {
+    text-decoration: none;
+    padding: 8px 12px;
+    margin: 0 5px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    font-size: 14px;
+    color: #007185; /* 🔥 Amazon風のリンクカラー */
+}
+
+.page-link:hover {
+    background-color: #f0f0f0; /* 🔥 Amazonのホバーエフェクト */
+}
+
+.page-link.active {
+    background-color: #FFD814; /* 🔥 アクティブページの背景色 */
+    font-weight: bold;
+}
+
+.page-link.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+/* 🔥 「前へ」「次へ」ボタン */
+.page-prev,
+.page-next {
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+}
+
+/* 🛍️ 商品詳細ページ */
+.goods-detail {
+	display: flex;
+	align-items: flex-start;
+	justify-content: flex-start;
+	/* 🔥 画像とテキストを左寄せ */
+	max-width: 1800px;
+	margin: 20px auto;
+	background: white;
+	padding: 200px;
+	/* 🔥 余白を適切なサイズに */
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.goods-detail img {
+	width: 600px;
+	/* 🔥 画像サイズを適切に */
+	height: auto;
+	border-radius: 10px;
+	margin-right: 40px;
+	/* 🔥 画像の右側に余白を追加 */
+}
+
+
+.goods-info {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	padding-left: 40px;
+	/* 🔥 テキストとの間隔を調整 */
+}
+
+
+.goods-info h2 {
+	font-size: 24px;
+	margin-bottom: 10px;
+}
+
+.product-info {
+	display: flex;
+	flex-direction: column;
+	width: 300px;
+	padding: 20px;
+	background: white;
+}
+
+.price {
+	font-size: 24px;
+	color: #b12704;
+	/* 🔥 Amazon風の価格色 */
+	font-weight: bold;
+}
+
+.points,
+.shipping,
+.location {
+	font-size: 14px;
+}
+
+.stock-status {
+	color: green;
+	font-weight: bold;
+}
+
+.purchase-options {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.cart-button,
+.buy-now-button {
+	width: 100%;
+	padding: 12px;
+	font-size: 16px;
+	border: none;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+.cart-button {
+	background-color: #ff9900;
+	color: white;
+}
+
+.buy-now-button {
+	background-color: #d9534f;
+	color: white;
+}
+
+.wishlist-button {
+	width: 100%;
+	background-color: #f0f0f0;
+	border: 1px solid #ccc;
+	padding: 10px;
+	cursor: pointer;
+	border-radius: 5px;
+}
+
+/* 🔗 戻るボタン */
+.back-link {
+	display: inline-block;
+	padding: 10px;
+	background-color: #007bff;
+	color: white;
+	text-decoration: none;
+	border-radius: 5px;
+	margin-top: 15px;
+}
+
+.back-link:hover {
+	background-color: #0056b3;
+}
+
+
+.buy-now-button {
+	background-color: #d9534f;
+	color: white;
+}
+
+.remove-button {
+	background-color: #d9534f;
+	color: white;
+	padding: 5px 10px;
+	border: none;
+	cursor: pointer;
+}
+
+.remove-button:hover {
+	background-color: #c9302c;
+}
+
+/* 🛍️ ヘッダーのスタイル */
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 12px 20px;
+	background-color: #232F3E;
+	/* 🔥 Amazon風の濃いブルー */
+	color: white;
+}
+
+.header-left .logo img {
+	width: 120px;
+}
+
+.header-center {
+	display: flex;
+	/* 🔥 検索フォームを確実に横並びに */
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	flex-grow: 1;
+	/* 🔥 幅を確保する */
+}
+
+.search-container {
+	display: flex;
+	/* 🔥 確実に横並び */
+	align-items: center;
+	width: 80%;
+	/* 🔥 幅を広げる */
+	max-width: 800px;
+	background: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	padding: 5px;
+	gap: 8px;
+}
+
+form {
+	display: flex;
+	flex-direction: row;
+	/* 🔥 横並びに修正 */
+	align-items: center;
+}
+
+.search-category {
+	width: 140px;
+	border-radius: 6px 0 0 6px;
+	padding: 10px;
+}
+
+.search-box {
+	flex: 1;
+	padding: 10px;
+	font-size: 1rem;
+	border: 1px solid #ccc;
+}
+
+.search-button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: #ff9900;
+	border-radius: 0 6px 6px 0;
+	padding: 10px 15px;
+	cursor: pointer;
+}
+
+.search-icon {
+	width: 20px;
+	height: auto;
+}
+
+.search-button img {
+	width: 20px;
+	/* 🔥 アイコンの幅を小さく */
+	height: auto;
+	/* 縦横比を維持 */
+	display: inline-block;
+	/* ボタン内で適切に配置 */
+	margin-left: 5px;
+	/* 🔥 少し間隔を開ける（調整可能） */
+}
+
+/* 🛒 カート＆アカウントアイコン */
+.header-right a {
+	display: flex;
+	align-items: center;
+	color: white;
+	text-decoration: none;
+	font-size: 1rem;
+	padding: 8px 12px;
+	margin-left: 10px;
+}
+
+.header-right a img {
+	width: 30px;
+}
+
+.button {
+	display: block;
+	background: #ff9900;
+	color: white;
+	padding: 8px 12px;
+	/* 🔥 ボタンの余白を小さく */
+	text-align: center;
+	font-size: 0.9rem;
+	border-radius: 4px;
+	cursor: pointer;
+	text-decoration: none;
+	transition: background 0.3s;
+}
+
+.button:hover {
+	background: #e68900;
+}
+
+.header-button img {
+	width: 32px;
+	/* 共通サイズ */
+	height: auto;
+}
+
+.cart-container {
+	max-width: 1000px;
+	margin: auto;
+	display: flex;
+	justify-content: space-between;
+	/* 🔥 左側に商品一覧、右側に合計金額 */
+	gap: 20px;
+}
+
+.cart-items {
+	flex: 2;
+}
+
+.cart-item {
+	display: flex;
+	align-items: center;
+	padding: 15px;
+	border-bottom: 1px solid #ddd;
+}
+
+.cart-image {
+	width: 120px;
+	height: auto;
+	margin-right: 20px;
+}
+
+.cart-details {
+	flex: 1;
+}
+
+.cart-details h2 {
+	font-size: 18px;
+	margin-bottom: 5px;
+}
+
+.quantity-options {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.quantity-options select {
+	padding: 5px;
+	font-size: 14px;
+}
+
+.remove-button {
+	background: none;
+	border: none;
+	color: #007185;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.cart-summary {
+	flex: 1;
+	background: white;
+	padding: 20px;
+	border-radius: 10px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	text-align: center;
+}
+
+.cart-summary p {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.checkout-button {
+	width: 100%;
+	padding: 12px;
+	font-size: 16px;
+	background-color: #ff9900;
+	color: white;
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	margin-top: 10px;
+}
+
+.slider-container {
+	position: relative;
+	width: 100%;
+	height: 400px;
+	overflow: hidden;
+}
+
+.image-slider {
+	display: flex;
+	transition: transform 0.5s ease-in-out;
+}
+
+.image-slider img {
+	width: 100%;
+	height: 400px;
+	object-fit: cover;
+}
+
+.slider-button {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(0, 0, 0, 0.5);
+	color: white;
+	font-size: 24px;
+	border: none;
+	cursor: pointer;
+	padding: 10px;
+}
+
+#prev {
+	left: 10px;
+}
+
+#next {
+	right: 10px;
+}
+
+body {
+	font-family: Arial, sans-serif;
+	text-align: center;
+	background-color: #f9f9f9;
+	margin: 0;
+	padding: 0;
+}
+
+/* スライダーのデザイン */
+.banner-container {
+	position: absolute;
+	/* 🔥 背面へ配置 */
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+	/* 🔥 商品リストの背面にする */
+}
+
+
+.splide__slide {
+	text-align: center;
+	/* 🔥 画像を中央に配置 */
+}
+
+.splide__slide img {
+	width: 70%;
+	height: 400px;
+	object-fit: cover;
+	margin: auto;
+	/* 🔥 画像が中央配置される */
+	display: block;
+	/* 🔥 確実に適用 */
+}
+
+/* ボタンのデザイン */
+.banner-button {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	background: rgba(0, 0, 0, 0.5);
+	color: white;
+	font-size: 24px;
+	border: none;
+	cursor: pointer;
+	padding: 10px;
+}
+
+#prev {
+	left: 10px;
+}
+
+#next {
+	right: 10px;
+}

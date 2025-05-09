@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>決済ページ</title>
+</head>
+<body>
+
+    <form id="payment-form">
+        <!-- ✅ Stripeの最新スクリプト -->
+        <script src="https://js.stripe.com/v3"></script>
+        <script src="/js/stripe.js"></script>
+
+        <!-- ✅ カード情報を入力する要素 -->
+        <div id="card-element"></div>
+
+        <!-- ✅ `stripeToken` を格納するための hidden input -->
+        <input type="hidden" id="stripeToken" name="stripeToken">
+        
+        <!-- ✅ 送信ボタン -->
+        <button type="submit">決済する</button>
+    </form>
+
+</body>
+</html>

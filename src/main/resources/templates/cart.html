@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>カート</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <th:block th:replace="~{fragment.html :: header}"></th:block>
+    <h1>カート</h1>
+	<div class="cart-container">
+	    <div class="cart-items">
+	        <div th:each="item : ${cartItems}" class="cart-item">
+	            <img th:src="${item.goods.imageUrl}" alt="商品画像" class="cart-image">
+	            <div class="cart-details">
+	                <h2 th:text="${item.goods.name}">商品名</h2>
+	                <p class="price" th:text="'¥' + ${item.goods.price}">価格</p>
+	                
+	                <!-- ✅ 数量変更オプション -->
+	                <div class="quantity-options">
+	                    <label for="quantity">数量:</label>
+	                    <select id="quantity" name="quantity">
+	                        <option value="1" th:selected="${item.numberOfItems == 1}">1</option>
+	                        <option value="2" th:selected="${item.numberOfItems == 2}">2</option>
+	                        <option value="3" th:selected="${item.numberOfItems == 3}">3</option>
+	                    </select>
+	                </div>
+
+	                <!-- ✅ 削除ボタン -->
+	                <form th:action="@{/cart/remove}" method="post">
+	                    <input type="hidden" name="goodsId" th:value="${item.goods.id}">
+	                    <button type="submit" class="remove-button">削除</button>
+	                </form>
+	            </div>
+	        </div>
+	    </div>
+
+	    <div class="cart-summary">
+	        <p th:text="'合計金額: ' + ${totalPrice} + '円'"></p>
+	        <a th:href="@{/checkout}" class="checkout-button">レジに進む</a>
+	    </div>
+	</div>
+</body>
+</html>

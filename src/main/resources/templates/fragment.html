@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>共通ヘッダー</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <!-- header フラグメントを定義 -->
+	<header class="header" th:fragment="header">
+	    <div class="header-left">
+	        <a th:href="@{/goods}" class="logo">
+	            <img src="/images/blog-0923-03.jpg" alt="会社ロゴ">
+	        </a>
+	    </div>
+	    <div class="header-center">
+	        <form th:action="@{/goods/search}" method="get" class="search-container">
+	            <select name="category" class="search-category">
+	                <option value="all">すべてのカテゴリー</option>
+	                <option value="cars">車・バイク</option>
+	                <option value="electronics">家電</option>
+	            </select>
+	            <input type="text" name="keyword" placeholder="検索..." class="search-box">
+	            <button type="submit" class="search-button">
+	                <img src="/images/sdesign_00182.png" alt="検索アイコン" class="search-icon">
+	            </button>
+	        </form>
+	    </div>
+	    <div class="header-right">
+	        <a th:href="@{/cart}" class="header-button">
+	            <img src="/images/icon_123370_256.jpg" alt="カートマーク">
+	        </a>
+	        <a th:href="@{/account}" class="header-button">
+	            <img src="/images/kkrn_icon_user_13.png" alt="アカウントマーク">
+	        </a>
+	    </div>
+	</header>
+</body>
+</html>

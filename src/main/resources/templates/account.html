@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>アカウント情報</title>
+</head>
+<body>
+	<th:block th:replace="fragment.html :: header"></th:block>
+	<div class="account-container">
+	    <h1>アカウント情報</h1>
+	    <div class="account-details">
+	        <p><strong>名前:</strong> <span th:text="${user.name}"></span></p>
+	        <p><strong>メール:</strong> <span th:text="${user.email}"></span></p>
+	        <p><strong>住所:</strong> <span th:text="${user.address}"></span></p>
+	    </div>
+	</div>
+</body>
+</html>

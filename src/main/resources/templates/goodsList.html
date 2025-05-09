@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>商品一覧</title>
+	<link rel="stylesheet" href="/css/style.css"> <!-- ✅ CSSを適用 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@latest/dist/css/splide.min.css">
+	<script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@latest/dist/js/splide.min.js"></script>
+
+</head>
+
+<body>
+	<th:block th:replace="~{fragment.html :: header}"></th:block>
+	<div class="banner-container">
+		<section id="image-carousel" class="splide">
+			<div class="splide__track">
+				<ul class="splide__list">
+					<li class="splide__slide"><img src="images/topimg_original.jpg" alt="広告画像1"></li>
+					<li class="splide__slide"><img src="images/image.png" alt="広告画像2"></li>
+					<li class="splide__slide"><img src="images/ad_list-1024x538.jpg" alt="広告画像3"></li>
+				</ul>
+			</div>
+		</section>
+	</div>
+
+
+
+	<h1>商品一覧</h1>
+	<div class="goods-container">
+		<div class="goods-item" th:each="goods : ${goodsList}">
+			<img th:src="${goods.imageUrl != null ? goods.imageUrl : '/images/default.jpg'}" alt="商品画像">
+			<h2 th:text="${goods.name}">商品名</h2>
+			<p class="price" th:text="'¥' + ${goods.price}">価格</p>
+			<a th:href="@{/goods/{id}(id=${goods.id})}" class="button">詳細を見る</a>
+		</div>
+	</div>
+	<!-- ✅ ページネーション -->
+	<div class="pagination">
+		<div th:if="${currentPage > 0}">
+			<a th:href="@{/goods(page=${currentPage - 1})}" class="page-link">前のページ</a>
+		</div>
+		<span th:text="'ページ ' + (${currentPage + 1}) + ' / ' + ${totalPages}"></span>
+		<div th:if="${currentPage < totalPages - 1}">
+			<a th:href="@{/goods(page=${currentPage + 1})}" class="page-link">次のページ</a>
+		</div>
+	</div>
+	<script src="js/slider.js"></script>
+</body>
+
+</html>
