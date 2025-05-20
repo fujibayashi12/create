@@ -2,6 +2,8 @@ package com.example.moattravel.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,4 +79,18 @@ public class OrderService {
 	    orderRepository.save(order);
 	}
 
+	public Page<Order> getAllOrders(Pageable page) {
+		return orderRepository.findAll(page);
+	}
+
+	public void updateOrderStatus(Integer orderId, String newStatus) {
+		 Order order = orderRepository.findById(orderId).orElseThrow(() -> new IllegalArgumentException("注文が見つかりません"));
+		    order.setStatus(newStatus);
+		    orderRepository.save(order);
+
+	}
+
+	public List<Order> getOrdersByUser(Integer userId) {
+	    return orderRepository.findByUserId(userId); // ✅ ユーザーごとの注文履歴を取得！
+	}
 }

@@ -1,5 +1,6 @@
 package com.example.moattravel.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,31 +11,37 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
-	
-	 @Bean
-	    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	        http
-	            .authorizeHttpRequests(auth -> auth
-	                .requestMatchers("/account/**").authenticated()  // ✅ `/account` はログイン必須！
-	                .requestMatchers("/login", "/register", "/").permitAll()  // ✅ ログイン不要
 
-	                .anyRequest().permitAll()
-	            )
-	            .formLogin(login -> login
-	                .loginPage("/login")  // ✅ ログインページの設定！
-	                .defaultSuccessUrl("/goods", true)  // ✅ ログイン成功時は `/goods` へ！
-	                .failureUrl("/login?error=true")  // ✅ 失敗時のリダイレクト！
-	                .permitAll()
-	            )
-	            .logout(logout -> logout
-	                .logoutSuccessUrl("/logout")  // ✅ ログアウト後は `/login` へ！
-	                .permitAll()
-	            );
-	        return http.build();
-	    }
+	@Autowired
+	private CustomAuthenticationSuccessHandler successHandler;
 
-	    @Bean
-	    public BCryptPasswordEncoder passwordEncoder() {
-	        return new BCryptPasswordEncoder();  // ✅ パスワードの暗号化！
-	    }
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http
+				.csrf().disable()
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/admin/**").hasRole("ADMIN") // ✅ 管理者だけ `/admin` へアクセス可能！
+						.requestMatchers("/account/**").authenticated() // ✅ `/account` はログイン必須
+						.requestMatchers("/login", "/signup", "/").permitAll() // ✅ ログイン不要
+						.anyRequest().permitAll()) // ✅ ここは制限なし
+				.formLogin(login -> login
+						.loginPage("/login")
+						.successHandler(successHandler) // ✅ `successHandler` でリダイレクト
+						.failureUrl("/login?error=true")
+						.permitAll())
+				.logout(logout -> logout
+						.logoutSuccessUrl("/logout")
+						.permitAll())
+				.logout(logout -> logout
+						.logoutUrl("/logout") // ✅ `/logout` でログアウト
+						.logoutSuccessUrl("/login") // ✅ ログアウト後は `/login` へリダイレクト！
+						.permitAll());
+
+		return http.build();
 	}
+
+	@Bean
+	public BCryptPasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(); // ✅ パスワードの暗号化！
+	}
+}

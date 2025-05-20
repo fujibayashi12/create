@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>管理者ダッシュボード</title>
+    <link rel="stylesheet" href="/css/admin.css"> <!-- スタイル適用 -->
+</head>
+<body>
+    <div class="admin-container">
+        <!-- ✅ 左側のナビゲーションバー -->
+        <nav class="admin-sidebar">
+            <h2>管理メニュー</h2>
+			<h3>ダッシュボード</h3>
+            <ul>
+                <li><a href="/admin/goodsList">🛒 商品管理</a></li>
+                <li><a href="/admin/ordersList">📦 注文管理</a></li>
+                <li><a href="/admin/users">👤 ユーザー管理</a></li>
+                <li><a href="/logout">🔓 ログアウト</a></li>
+            </ul>
+        </nav>
+
+        <!-- ✅ メインコンテンツ -->
+        <main class="admin-main">
+            <h1>ダッシュボード</h1>
+            <p>管理画面へようこそ！ここで各種データを管理できます。</p>
+
+            <div class="admin-stats">
+                <div class="stat-box">💰 総売上: ¥1,250,000</div>
+                <div class="stat-box">📦 受注数: 340 件</div>
+                <div class="stat-box">🛒 商品数: 128 点</div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>

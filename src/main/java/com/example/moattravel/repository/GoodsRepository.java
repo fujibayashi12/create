@@ -8,10 +8,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.moattravel.entity.Goods;
 
-public interface GoodsRepository extends JpaRepository<Goods,Integer>{
+public interface GoodsRepository extends JpaRepository<Goods, Integer> {
 
 	List<Goods> findByNameContainingIgnoreCase(String name);
 
-	 Page<Goods> findByNameContainingIgnoreCase(String name, Pageable pageable);  // ✅ ページネーション対応！
-	    Page<Goods> findAll(Pageable pageable);  // ✅ 全件取得もページネーション対応！
-	}
+	Page<Goods> findByNameContainingIgnoreCase(String name, Pageable pageable); // ✅ ページネーション対応！
+
+	Page<Goods> findAll(Pageable pageable); // ✅ 全件取得もページネーション対応！
+
+	Page<Goods> findByCategoryAndNameContainingIgnoreCase(String category, String keyword, Pageable pageable);
+
+	Page<Goods> findByCategory(String category, Pageable pageable);
+}

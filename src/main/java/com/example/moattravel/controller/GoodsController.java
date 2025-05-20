@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.moattravel.Form.GoodsEditForm;
 import com.example.moattravel.entity.Goods;
 import com.example.moattravel.service.GoodsService;
 
@@ -48,8 +49,8 @@ public class GoodsController {
 
 	// 商品情報を更新（JSONで返す）
 	@PutMapping("/{id}")
-	public ResponseEntity<Goods> updateGoods(@PathVariable Integer id, @RequestBody Goods newGoods) {
-		return ResponseEntity.ok(goodsService.updateGoods(id, newGoods));
+	public ResponseEntity<Goods> updateGoods(@PathVariable Integer id, @RequestBody GoodsEditForm goodsEditForm) {
+		return ResponseEntity.ok(goodsService.editGoods(id, goodsEditForm));
 	}
 
 	// 商品を削除（JSONで返す）
@@ -58,6 +59,5 @@ public class GoodsController {
 		goodsService.deleteGoods(id);
 		return ResponseEntity.noContent().build();
 	}
-	
-	
+
 }

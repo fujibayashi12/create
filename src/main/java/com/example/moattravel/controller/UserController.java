@@ -1,5 +1,7 @@
 package com.example.moattravel.controller;
 
+import java.util.List;
+
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
@@ -9,7 +11,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.example.moattravel.entity.Order;
 import com.example.moattravel.entity.User;
+import com.example.moattravel.service.OrderService;
 import com.example.moattravel.service.UserService;
 
 @Controller
@@ -17,9 +21,10 @@ import com.example.moattravel.service.UserService;
 public class UserController {
 
 	private final UserService userService;
-	
-	public UserController(UserService userService) {
+	private final OrderService orderService;
+	public UserController(UserService userService,OrderService orderService) {
 		this.userService = userService;
+		this.orderService = orderService;
 	}
 	@GetMapping("/login")
     public String showLoginPage() {
@@ -40,5 +45,16 @@ public class UserController {
         userService.registerUser(user);
         return "redirect:/login";  // ✅ 登録後にログインページへ！
     }
+    //注文履歴表示と取得
+    @GetMapping("/orders")
+    public String getUserOrders(@AuthenticationPrincipal UserDetails userDetails, Model model) {
+        User user = userService.findByEmail(userDetails.getUsername()); // ✅ ログインユーザーの情報を取得！
+        
+        List<Order> orders = orderService.getOrdersByUser(user.getId()); // ✅ ユーザーごとの注文履歴を取得！
+        model.addAttribute("orders", orders);
+        
+        return "orders"; // ✅ `orders.html` に遷移！
+    }
+    
 }
 

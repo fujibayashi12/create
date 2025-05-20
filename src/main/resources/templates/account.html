@@ -1,18 +1,27 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>アカウント情報</title>
+    <title>マイアカウント</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
-	<th:block th:replace="fragment.html :: header"></th:block>
-	<div class="account-container">
-	    <h1>アカウント情報</h1>
-	    <div class="account-details">
-	        <p><strong>名前:</strong> <span th:text="${user.name}"></span></p>
-	        <p><strong>メール:</strong> <span th:text="${user.email}"></span></p>
-	        <p><strong>住所:</strong> <span th:text="${user.address}"></span></p>
-	    </div>
-	</div>
+	<th:block th:replace="~{fragment.html :: header}"></th:block>
+    <div class="container">
+        <h2 class="account-title">マイアカウント</h2>
+        
+        <div class="account-details">
+            <p><strong>名前:</strong> <span th:text="${user.name}"></span></p>
+            <p><strong>メールアドレス:</strong> <span th:text="${user.email}"></span></p>
+            <p><strong>電話番号:</strong> <span th:text="${user.phoneNumber}"></span></p>
+        </div>
+
+        <div class="account-actions">
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="btn-primary">ログアウト</button>
+            </form>
+
+            <a th:href="@{/account/orders}" class="btn-secondary">注文履歴を見る</a>
+        </div>
+    </div>
 </body>
 </html>

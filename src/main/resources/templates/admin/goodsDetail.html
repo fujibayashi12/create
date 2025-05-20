@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品詳細</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>商品詳細</h1>
+    <div class="goods-detail">
+        <img th:src="${goods.imageUrl}" alt="商品画像">
+        <h2 th:text="${goods.name}"></h2>
+        <p th:text="'価格: ¥' + ${goods.price}"></p>
+        <p th:text="${goods.description}"></p>
+        <p th:text="'カテゴリ: ' + ${goods.category}"></p>
+        <p th:text="'在庫数: ' + ${goods.stock}"></p>
+        <p th:text="'注文上限: ' + ${goods.orderCapacity}"></p>
+
+        <a th:href="@{/admin/goodsList/goodsEdit/{id}(id=${goods.id})}" class="button">ステータス変更</a>
+       <a th:href="@{/admin/goodsList}" class="button-secondary">商品一覧へ戻る</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<title>注文管理</title>
+	<link rel="stylesheet" href="/css/admin.css"> <!-- ✅ 管理ページ用のCSS -->
+</head>
+
+<body>
+	<div class="admin-container">
+		<nav class="admin-sidebar">
+			<h2>管理メニュー</h2>
+			<h3>注文管理ページ</h3>
+			<ul>
+				<li><a href="/admin/dashboard">🏠 ダッシュボード</a></li>
+				<li><a href="/admin/goodsList">🛒 商品管理</a></li>
+				<li><a href="/admin/users">👤 ユーザー管理</a></li>
+				<li><a href="/logout">🔓 ログアウト</a></li>
+			</ul>
+		</nav>
+
+		<main class="admin-main">
+			<h1>注文管理</h1>
+			<table class="orders-table">
+				<thead>
+					<tr>
+						<th>注文ID</th>
+						<th>ユーザー名</th>
+						<th>購入商品</th>
+						<th>合計金額</th>
+						<th>ステータス</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- ✅ Thymeleaf で注文一覧を表示 -->
+					<tr th:each="order : ${ordersList}">
+						<td th:text="${order.id}"></td>
+						<td th:text="${order.user.name}"></td>
+						<td th:text="${order.goods.name}"></td>
+						<td th:text="${order.totalPrice}"></td>
+						<td th:text="${order.status}"></td>
+						<td>
+
+					
+							<form th:action="@{/admin/ordersList/updateStatus}" method="post">
+								<input type="hidden" name="id" th:value="${order.id}">
+								<button type="submit" class="btn_d btn-update">📦 発送済みに変更</button>
+							</form>
+							<form th:action="@{/admin/ordersList/delete}" method="post">
+								<input type="hidden" name="id" th:value="${order.id}">
+								<button type="submit" class="btn_d btn-delete">❌ 削除</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main>
+	</div>
+</body>
+
+</html>

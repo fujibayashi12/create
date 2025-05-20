@@ -18,10 +18,11 @@ CREATE TABLE IF NOT EXISTS users (
     address VARCHAR(255) NOT NULL,
     postal_code VARCHAR(50) NOT NULL,
     phone_number VARCHAR(20) NOT NULL,
-    email VARCHAR(50) NOT NULL, 
+    email VARCHAR(50) NOT NULL UNIQUE, 
     password VARCHAR(255) NOT NULL,
     role_id INT NOT NULL,
     enabled BOOLEAN NOT NULL,
+    frozen BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -32,9 +33,9 @@ CREATE TABLE IF NOT EXISTS orders ( -- テーブル名を `order` から `orders
     user_id INT NOT NULL,
     number_of_orders INT NOT NULL,
     amount INT NOT NULL, 
-    status VARCHAR(20),
+    status ENUM('未発送', '発送済み', 'キャンセル') NOT NULL DEFAULT '未発送', -- ✅ 発送状態を ENUM で管理！
     quantity INT NOT NULL,
-    payment_status ENUM('pending', 'completed') NOT NULL DEFAULT 'pending', -- 支払いステータスを追加
+    payment_status ENUM('pending', 'completed') NOT NULL DEFAULT 'pending', -- ✅ 支払いステータスを管理
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (goods_id) REFERENCES goods(id) ON DELETE CASCADE,

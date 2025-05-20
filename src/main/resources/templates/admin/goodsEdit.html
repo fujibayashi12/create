@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>商品編集</title>
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+<body>
+    <div class="container">
+        <h2 class="title">商品編集</h2>
+
+        <form th:action="@{/admin/goodsList/goodsEdit/{id}(id=${goodsId})}" method="post">
+            <input type="hidden" name="id" th:value="${goodsEditForm.id}"> <!-- ✅ IDを渡す -->
+
+            <label>商品名:</label>
+            <input type="text" name="name" th:value="${goodsEditForm.name}" required>
+
+            <label>価格:</label>
+            <input type="number" name="price" th:value="${goodsEditForm.price}" required>
+
+            <label>説明:</label>
+            <textarea name="description" th:text="${goodsEditForm.description}" required></textarea>
+
+            <label>カテゴリ:</label>
+            <select name="category" required>
+                <option value="electronics" th:selected="${goodsEditForm.category == 'electronics'}">電子機器</option>
+                <option value="fashion" th:selected="${goodsEditForm.category == 'fashion'}">ファッション</option>
+                <option value="books" th:selected="${goodsEditForm.category == 'books'}">書籍</option>
+            </select>
+
+            <label>注文上限数:</label>
+            <input type="number" name="orderCapacity" th:value="${goodsEditForm.orderCapacity}" required>
+
+            <label>在庫数:</label>
+            <input type="number" name="stock" th:value="${goodsEditForm.stock}" required>
+
+            <label>画像の URL:</label>
+            <input type="text" name="imageUrl" th:value="${goodsEditForm.imageUrl}" required>
+
+            <button type="submit" class="btn-primary">編集登録する</button>
+        </form>
+
+        <a th:href="@{/admin/goodsList}" class="btn-secondary">商品一覧へ戻る</a>
+    </div>
+</body>
+</html>

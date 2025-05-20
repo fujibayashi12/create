@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<title>商品管理</title>
+	<link rel="stylesheet" href="/css/admin.css"> <!-- ✅ 管理ページ用のCSS -->
+</head>
+
+<body>
+	<div class="admin-container">
+		<nav class="admin-sidebar">
+			<h2>管理メニュー</h2>
+			<h3>商品管理ページ</h3>
+
+			<ul>
+				<li><a href="/admin/dashboard">🏠 ダッシュボード</a></li>
+				<li><a href="/admin/ordersList">📦 注文管理</a></li>
+				<li><a href="/admin/users">👤 ユーザー管理</a></li>
+				<li><a href="/logout">🔓 ログアウト</a></li>
+			</ul>
+		</nav>
+
+		<main class="admin-main">
+			<h1>商品管理</h1>
+			<div class="header-center">
+				<form th:action="@{/admin/goodsList/search}" method="get" class="search-container">
+					<select name="category" class="search-category">
+						<option value="all">すべて</option>
+						<option value="cars">車・バイク</option>
+						<option value="electronics">家電</option>
+					</select>
+					<input type="text" name="keyword" placeholder="検索..." class="search-box">
+					<button type="submit" class="search-button">
+						<img src="/images/sdesign_00182.png" alt="検索アイコン" class="search-icon">
+					</button>
+				</form>
+			</div>
+			<a th:href="@{/admin/goodsList/goodsRegister}" class="btn-d">新規商品登録</a>
+			<table class="product-table">
+				<thead>
+					<tr>
+						<th>商品名</th>
+						<th>価格</th>
+						<th>カテゴリ</th>
+						<th>在庫</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<!-- ✅ Thymeleaf で商品一覧を表示 -->
+					<tr th:each="goods : ${goodsList}">
+						<td th:text="${goods.name}"></td>
+						<td th:text="${goods.price}"></td>
+						<td th:text="${goods.category}"></td>
+						<td th:text="${goods.stock}"></td>
+						<td>
+							<a th:href="@{/admin/goodsList/{id}(id=${goods.id})}" class="btn_d btn-detail">🔍 詳細を見る</a>
+							<form th:action="@{/admin/goodsList/delete}" method="post">
+								<input type="hidden" name="id" th:value="${goods.id}">
+								<button type="submit" class="btn_d btn-delete">❌ 削除</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</main>
+	</div>
+</body>
+
+</html>

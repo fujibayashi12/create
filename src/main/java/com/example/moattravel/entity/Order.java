@@ -45,11 +45,16 @@ public class Order {
 
 	private Integer quantity; // ✅ これが定義されているか確認！
 
-    private String status;
+	private String status;
 
-    // 必要なゲッター・セッターを追加！
-    public Integer getQuantity() {
-        return quantity;
-    }
+	// 必要なゲッター・セッターを追加！
+	public Integer getQuantity() {
+		return quantity;
+	}
+
+	// ✅ ゲッターで計算！
+	public Integer getTotalPrice() {
+		return (amount != null && quantity != null) ? amount * quantity : 0;
+	}
 
 }

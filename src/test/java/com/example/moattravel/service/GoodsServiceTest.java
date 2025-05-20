@@ -284,23 +284,16 @@ class GoodsServiceTest {
 	    newGoods.setOrderCapacity(2);
 	    newGoods.setStock(20);
 	    newGoods.setImageUrl("new_pc.jpg");
-	    // ここで createdAt は設定しない（@PrePersistで設定されるため）
-	    // updatedAt はGoodsクラスの初期化時に設定されるので、そのままにしておく
 
 	    // 2. モックの設定
 	    Mockito.when(goodsRepository.save(Mockito.any(Goods.class))).thenAnswer(invocation -> {
-	        Goods goodsToSave = invocation.getArgument(0);
+	        Goods goodsToSave = invocation.getArgument(0); // サービスからsaveに渡されたGoodsオブジェクト
 
-	        // ★★★ ここが修正点！ @PrePersist の挙動をモックで再現 ★★★
-	        // サービスが setCreatedAt を呼んでいても、@PrePersist が優先されるため、
-	        // save() に渡される goodsToSave は createdAt が null であると想定。
-	        // そして、save() が返却するオブジェクトにcreatedAtが設定されると模擬する。
-	        // goodsToSave.setCreatedAt(Timestamp.from(Instant.now())); // これでも良いが、JPAの挙動に合わせるため以下のように新しいインスタンスで返す
-	        
 	        Goods returnedGoods = new Goods(); // save()が返すと仮定する新しいGoodsオブジェクト
 	        returnedGoods.setId(99); // DBが割り当てた仮のID
 
-	        // サービスが設定したプロパティと、デフォルト値で設定されたupdatedAtをコピー
+	        // サービスが設定したプロパティ（名前、価格など）と、
+	        // 今回サービスが設定するように戻した createdAt, updatedAt をコピー
 	        returnedGoods.setName(goodsToSave.getName());
 	        returnedGoods.setPrice(goodsToSave.getPrice());
 	        returnedGoods.setCategory(goodsToSave.getCategory());
@@ -309,22 +302,10 @@ class GoodsServiceTest {
 	        returnedGoods.setStock(goodsToSave.getStock());
 	        returnedGoods.setImageUrl(goodsToSave.getImageUrl());
 	        
-	        // ★★★ createdAt と updatedAt の処理を再考 ★★★
-	        // GoodsService.addGoods() は createdAt と updatedAt を設定しています。
-	        // そして Goods クラスには @PrePersist があります。
-	        // 実際の動作では @PrePersist が実行されるため、service.addGoods() 内の setCreatedAt は上書きされます。
-	        // updatedAt は Goods クラスの初期化時に設定され、service.addGoods() でも上書きされます。
-	        
-	        // したがって、save() に渡される goodsToSave は、
-	        // service.addGoods() で設定された createdAt と updatedAt を持つはずです。
-	        // そして、save() が返す returnedGoods は、IDとcreatedAt (@PrePersist由来)を持つべきです。
-	        
-	        // ここでは、service.addGoods() が設定した createdAt と updatedAt をコピー
-	        // もし @PrePersist が優先されると考えるなら、returnedGoods.setCreatedAt(Timestamp.from(Instant.now())); を使う
-	        // しかし、addGoods のテストでは「サービスが設定した値」を検証したいので、goodsToSaveからコピーする方が適切
+	        // ★★★ ここが重要: サービスが設定した createdAt と updatedAt をコピーする ★★★
 	        returnedGoods.setCreatedAt(goodsToSave.getCreatedAt()); 
-	        returnedGoods.setUpdatedAt(goodsToSave.getUpdatedAt()); 
-
+	        returnedGoods.setUpdatedAt(goodsToSave.getUpdatedAt());
+	        
 	        return returnedGoods;
 	    });
 
@@ -346,10 +327,9 @@ class GoodsServiceTest {
 	        Objects.equals(goodsInSave.getStock(), newGoods.getStock()) &&
 	        Objects.equals(goodsInSave.getImageUrl(), newGoods.getImageUrl()) &&
 	        
-	        // ★★★ ここも修正点！ createdAt と updatedAt がサービスによって設定されていることを検証 ★★★
-	        // @PrePersist は save() の後なので、save() に渡される時点ではサービスが設定した値が入っているはず
-	        goodsInSave.getCreatedAt() != null &&
-	        goodsInSave.getUpdatedAt() != null &&
+	        // ★★★ ここが重要: createdAt と updatedAt がサービスによって設定されていることを検証 ★★★
+	        goodsInSave.getCreatedAt() != null && // null でないこと
+	        goodsInSave.getUpdatedAt() != null && // null でないこと
 	        // 時刻はテスト実行時のわずかなズレを考慮し、現在時刻から1秒以内であることを検証
 	        goodsInSave.getCreatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)) &&
 	        goodsInSave.getUpdatedAt().after(new Timestamp(System.currentTimeMillis() - 1000))
@@ -365,7 +345,6 @@ class GoodsServiceTest {
 	    assertEquals(newGoods.getStock(), resultGoods.getStock(), "返された商品の在庫数が期待通りでない");
 	    assertEquals(newGoods.getImageUrl(), resultGoods.getImageUrl(), "返された商品の画像URLが期待通りでない");
 
-	    // createdAt と updatedAt が設定されていることを確認
 	    assertNotNull(resultGoods.getCreatedAt(), "返された商品の作成日時がnullである");
 	    assertNotNull(resultGoods.getUpdatedAt(), "返された商品の更新日時がnullである");
 	    assertTrue(resultGoods.getCreatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)), "返された商品の作成日時が古すぎる");

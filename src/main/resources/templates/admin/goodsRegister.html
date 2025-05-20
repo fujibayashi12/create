@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>新規商品登録</title>
+	<link rel="stylesheet" th:href="@{/css/admin.css}">
+</head>
+
+<body>
+	<div class="container">
+		<h2 class="title">新規商品登録</h2>
+
+		<form th:action="@{/admin/goodsList/goodsRegister}" method="post" enctype="multipart/form-data">
+			<label>商品名:</label>
+			<input type="text" name="name" th:value="${goodsRegisterForm.name}" required>
+
+			<label>価格:</label>
+			<input type="number" name="price" th:value="${goodsRegisterForm.price}" required>
+
+			<label>説明:</label>
+			<textarea name="description" th:text="${goodsRegisterForm.description}" required></textarea>
+
+			<label>カテゴリ:</label>
+			<select name="category" required>
+				<option value="" disabled selected>カテゴリを選択</option>
+				<option value="家電・照明" th:selected="${goodsRegisterForm.category == '家電・照明'}">家電・照明</option>
+				<option value="家電" th:selected="${goodsRegisterForm.category == '家電'}">家電</option>
+				<option value="日用品" th:selected="${goodsRegisterForm.category == '日用品'}">日用品</option>
+				<option value="スマホアクセサリ" th:selected="${goodsRegisterForm.category == 'スマホアクセサリ'}">スマホアクセサリ</option>
+				<option value="キッチン用品" th:selected="${goodsRegisterForm.category == 'キッチン用品'}">キッチン用品</option>
+				<option value="PC周辺機器" th:selected="${goodsRegisterForm.category == 'PC周辺機器'}">PC周辺機器</option>
+			</select>
+
+			<label>注文上限数:</label>
+			<input type="number" name="orderCapacity" th:value="${goodsRegisterForm.orderCapacity}" required>
+
+			<label>在庫数:</label>
+			<input type="number" name="stock" th:value="${goodsRegisterForm.stock}" required>
+
+			<label>画像の URL:</label>
+			<input type="text" name="imageUrl" th:value="${goodsRegisterForm.imageUrl}" required>
+
+
+			<button type="submit" class="btn-primary">登録する</button>
+		</form>
+
+		<a th:href="@{/admin/dashboard}" class="btn-secondary">管理ページへ戻る</a>
+	</div>
+</body>
+
+</html>

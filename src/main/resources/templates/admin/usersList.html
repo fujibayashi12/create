@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<title>ユーザー一覧</title>
+	<link rel="stylesheet" href="/css/admin.css">
+</head>
+
+<body>
+	<h2>ユーザー一覧</h2>
+	<form th:action="@{/admin/users/search}" method="get">
+		<input type="text" name="keyword" placeholder="名前・メール・電話番号で検索">
+		<button type="submit">🔍 検索</button>
+	</form>
+	<table border="1">
+		<thead>
+			<tr>
+				<th>ID</th>
+				<th>名前</th>
+				<th>メールアドレス</th>
+				<th>電話番号</th>
+				<th>アカウント状態</th>
+				<th>アクション</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="user : ${usersList}">
+				<td th:text="${user.id}"></td>
+				<td th:text="${user.name}"></td>
+				<td th:text="${user.email}"></td>
+				<td th:text="${user.phoneNumber}"></td>
+				<td th:text="${user.frozen ? '凍結' : '有効'}"></td>
+				<td>
+					<a th:href="@{/admin/users/{id}(id=${user.id})}">詳細</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<a th:href="@{/admin/dashboard}">管理ページへ戻る</a>
+</body>
+
+</html>

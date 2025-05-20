@@ -1,8 +1,10 @@
 package com.example.moattravel.entity;
+
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,53 +21,84 @@ import lombok.Data;
 @Entity
 @Table(name = "users")
 @Data
-public class User implements UserDetails {  // ✅ Spring Security用に `UserDetails` を実装！
+public class User implements UserDetails { // ✅ Spring Security用に `UserDetails` を実装！
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 
-    private String name;
-    private String furigana;
-    private String postalCode;
-    private String address;
-    private String phoneNumber;
-    private String email;
-    private String password;
+	private String name;
+	private String furigana;
+	private String postalCode;
+	private String address;
+	
+	@Column(name = "phone_number")
+	private String phoneNumber;
+	private String email;
+	private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "role_id")
-    private Role role;
+	public User(String name, String furigana, String postalCode, String address,
+			String phoneNumber, String email, String password) {
+		this.name = name;
+		this.furigana = furigana;
+		this.postalCode = postalCode;
+		this.address = address;
+		this.phoneNumber = phoneNumber;
+		this.email = email;
+		this.password = password;
+		this.enabled = false;
+		this.createdAt = new Timestamp(System.currentTimeMillis());
+		this.updatedAt = new Timestamp(System.currentTimeMillis());
 
-    private boolean enabled;
-    private Timestamp createdAt;
-    private Timestamp updatedAt;
+	}
 
-    // ✅ Spring Securityに「権限（ロール）」を渡す
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(() -> role.getName());  // `role` を権限として返す！
-    }
+	public User() {
 
-    @Override
-    public String getUsername() {
-        return email;  // ✅ ログイン時の識別子として `email` を使用！
-    }
+	}
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
+	@ManyToOne
+	@JoinColumn(name = "role_id")
+	private Role role;
 
-    @Override
-    public boolean isAccountNonExpired() { return true; }
+	private boolean enabled;
+	private Timestamp createdAt;
+	private Timestamp updatedAt;
 
-    @Override
-    public boolean isAccountNonLocked() { return true; }
+	// ✅ Spring Securityに「権限（ロール）」を渡す
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return List.of(() -> role.getName()); // `role` を権限として返す！
+	}
 
-    @Override
-    public boolean isCredentialsNonExpired() { return true; }
+	@Override
+	public String getUsername() {
+		return email; // ✅ ログイン時の識別子として `email` を使用！
+	}
 
-    @Override
-    public boolean isEnabled() { return enabled; }
-}
+	@Override
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return enabled;
+	}
+	@Column(name = "frozen", nullable = false)
+	private boolean frozen = false; // ✅ デフォルトは「false」（凍結されていない）
+	}
