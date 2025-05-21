@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +20,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -257,98 +259,203 @@ class GoodsServiceTest {
 	@Test
 	@DisplayName("コンストラクタ")
 	void testGoodsService() {
-		fail("まだ実装されていません");
+		 // GoodsService クラスが null でないことを確認するだけ
+	    // @InjectMocks が GoodsService のインスタンスを生成し、
+	    // @Mock でモック化した goodsRepository を注入してくれるため、
+	    // このアサーションだけで十分なことが多いです。
+		Assertions.assertNotNull(goodsService,"GoodsServiceのインスタンスが生成されいるべきです");
+		Assertions.assertNotNull(goodsRepository,"GoodsRepositoryのモックが注入されいるべきです");
+		
+	
 	}
 
-	@Test
-	@DisplayName("商品を取得")
-	void testGetGoods() {
-		fail("まだ実装されていません");
-	}
+	//@Test
+	//@DisplayName("商品を取得")
+	//void testGetGoods() {
+	//	fail("まだ実装されていません");
+	//}
 
 	@Test
-	@DisplayName("商品Idを取得")
-	void testGetGoodsById() {
-		fail("まだ実装されていません");
+	@DisplayName("商品Idを取得 - 正常系: 指定したIDの商品が取得できる")
+	void testGetGoodsById_successfilRetrieval() {
+
+		Integer targetGoodsId = 1;
+
+		Goods expectedGoods = new Goods();
+		expectedGoods.setId(targetGoodsId);
+		expectedGoods.setName("既存のPC");
+		expectedGoods.setPrice(10000);
+		expectedGoods.setCategory("PC");
+		expectedGoods.setDescription("普通のPCです");
+		expectedGoods.setOrderCapacity(5);
+		expectedGoods.setStock(50);
+		expectedGoods.setImageUrl("existing_pc.jpg");
+
+		// 2. モックの設定
+		// goodsRepository.findById(targetGoodsId) が呼ばれたら、
+		// 準備した expectedGoods を含む Optional を返す
+		Mockito.when(goodsRepository.findById(targetGoodsId)).thenReturn(Optional.of(expectedGoods));
+
+		// 3. テスト対象のメソッドを実行
+		Optional<Goods> resultOptionalGoods = goodsService.getGoodsById(targetGoodsId);
+
+		//４．検証
+		// a. 返されたOptionalが空ではないことを確認
+		assertTrue(resultOptionalGoods.isPresent(), "Optionalが空であってはならない");
+
+		// b. Optionalの中身が期待するGoodsオブジェクトと等しいことを確認
+		Goods actualGoods = resultOptionalGoods.get();
+		assertEquals(expectedGoods.getId(), actualGoods.getId(), "取得した商品のIDが期待通りでない");
+		assertEquals(expectedGoods.getName(), actualGoods.getName(), "取得した商品の名前が期待通りでない");
+		assertEquals(expectedGoods.getPrice(), actualGoods.getPrice(), "取得した商品の価格が期待通りでない");
+		assertEquals(expectedGoods.getCategory(), actualGoods.getCategory(), "取得した商品のカテゴリーが期待通りでない");
+		assertEquals(expectedGoods.getDescription(), actualGoods.getDescription(), "取得した商品の説明が期待通りでない");
+		assertEquals(expectedGoods.getOrderCapacity(), actualGoods.getOrderCapacity(), "取得した商品の注文上限数が期待通りでない");
+		assertEquals(expectedGoods.getStock(), actualGoods.getStock(), "取得した商品の在庫が期待通りではない");
+		assertEquals(expectedGoods.getImageUrl(), actualGoods.getImageUrl(), "取得した商品の画像URLが期待通りでない");
+
+		// c. goodsRepository.findById() が正しいIDで1回呼び出されたことを確認
+		Mockito.verify(goodsRepository, Mockito.times(1)).findById(targetGoodsId);
+	}
+	
+	@Test
+	@DisplayName("商品をIDで取得 - 異常系: 指定したIDの商品が見つからない")
+	void testGetGoodsById_notFound() {
+		// 1.テストデータの準備
+		Integer nonExistentId = 999;
+		
+		// 2. モックの設定
+		//goodsRepository.findById(nonExistentId)が呼ばれたら、空のOptioanlを返す
+		Mockito.when(goodsRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+		
+		// 3. テスト対象のメソッドを実行
+		Optional<Goods> resultOptionalGoods = goodsService.getGoodsById(nonExistentId);
+		
+		// 4. 検証
+		// a.返されたOptionalが空であることを確認
+		assertTrue(resultOptionalGoods.isEmpty(),"Optionalが空であるべきでした（商品が見つからないため）");
+		
+		// b.goodsRepository.findById()が正しいIdで一回呼び出されたことを一回確認
+		Mockito.verify(goodsRepository,Mockito.times(1)).findById(nonExistentId);
 	}
 
 	@Test
 	@DisplayName("商品を追加 - 正常系: 新しい商品を正しく保存できる")
 	void testAddGoods_successfulAddition() {
-	    // 1. テストデータの準備 (変更なし)
-	    Goods newGoods = new Goods();
-	    newGoods.setName("新しいPC");
-	    newGoods.setPrice(150000);
-	    newGoods.setCategory("PC周辺機器");
-	    newGoods.setDescription("高性能デスクトップPC");
-	    newGoods.setOrderCapacity(2);
-	    newGoods.setStock(20);
-	    newGoods.setImageUrl("new_pc.jpg");
+		// 1. テストデータの準備 (変更なし)
+		Goods newGoods = new Goods();
+		newGoods.setName("新しいPC");
+		newGoods.setPrice(150000);
+		newGoods.setCategory("PC周辺機器");
+		newGoods.setDescription("高性能デスクトップPC");
+		newGoods.setOrderCapacity(2);
+		newGoods.setStock(20);
+		newGoods.setImageUrl("new_pc.jpg");
 
-	    // 2. モックの設定
-	    Mockito.when(goodsRepository.save(Mockito.any(Goods.class))).thenAnswer(invocation -> {
-	        Goods goodsToSave = invocation.getArgument(0); // サービスからsaveに渡されたGoodsオブジェクト
+		// 2. モックの設定
+		Mockito.when(goodsRepository.save(Mockito.any(Goods.class))).thenAnswer(invocation -> {
+			Goods goodsToSave = invocation.getArgument(0); // サービスからsaveに渡されたGoodsオブジェクト
 
-	        Goods returnedGoods = new Goods(); // save()が返すと仮定する新しいGoodsオブジェクト
-	        returnedGoods.setId(99); // DBが割り当てた仮のID
+			Goods returnedGoods = new Goods(); // save()が返すと仮定する新しいGoodsオブジェクト
+			returnedGoods.setId(99); // DBが割り当てた仮のID
 
-	        // サービスが設定したプロパティ（名前、価格など）と、
-	        // 今回サービスが設定するように戻した createdAt, updatedAt をコピー
-	        returnedGoods.setName(goodsToSave.getName());
-	        returnedGoods.setPrice(goodsToSave.getPrice());
-	        returnedGoods.setCategory(goodsToSave.getCategory());
-	        returnedGoods.setDescription(goodsToSave.getDescription());
-	        returnedGoods.setOrderCapacity(goodsToSave.getOrderCapacity());
-	        returnedGoods.setStock(goodsToSave.getStock());
-	        returnedGoods.setImageUrl(goodsToSave.getImageUrl());
-	        
-	        // ★★★ ここが重要: サービスが設定した createdAt と updatedAt をコピーする ★★★
-	        returnedGoods.setCreatedAt(goodsToSave.getCreatedAt()); 
-	        returnedGoods.setUpdatedAt(goodsToSave.getUpdatedAt());
-	        
-	        return returnedGoods;
-	    });
+			// サービスが設定したプロパティ（名前、価格など）と、
+			// 今回サービスが設定するように戻した createdAt, updatedAt をコピー
+			returnedGoods.setName(goodsToSave.getName());
+			returnedGoods.setPrice(goodsToSave.getPrice());
+			returnedGoods.setCategory(goodsToSave.getCategory());
+			returnedGoods.setDescription(goodsToSave.getDescription());
+			returnedGoods.setOrderCapacity(goodsToSave.getOrderCapacity());
+			returnedGoods.setStock(goodsToSave.getStock());
+			returnedGoods.setImageUrl(goodsToSave.getImageUrl());
 
-	    // 3. テスト対象のメソッドを実行 (変更なし)
-	    Goods resultGoods = goodsService.addGoods(newGoods);
+			// ★★★ ここが重要: サービスが設定した createdAt と updatedAt をコピーする ★★★
+			returnedGoods.setCreatedAt(goodsToSave.getCreatedAt());
+			returnedGoods.setUpdatedAt(goodsToSave.getUpdatedAt());
 
-	    // 4. 検証
+			return returnedGoods;
+		});
 
-	    // a. goodsRepository.save() が、正しい内容のGoodsオブジェクトで1回呼び出されたことを確認
-	    Mockito.verify(goodsRepository, Mockito.times(1)).save(Mockito.argThat(goodsInSave ->
-	        // save()に渡される Goods オブジェクトのIDは、サービスが設定しないため **nullであるべき**
-	        goodsInSave.getId() == null && 
+		// 3. テスト対象のメソッドを実行 (変更なし)
+		Goods resultGoods = goodsService.addGoods(newGoods);
 
-	        Objects.equals(goodsInSave.getName(), newGoods.getName()) &&
-	        Objects.equals(goodsInSave.getPrice(), newGoods.getPrice()) &&
-	        Objects.equals(goodsInSave.getCategory(), newGoods.getCategory()) &&
-	        Objects.equals(goodsInSave.getDescription(), newGoods.getDescription()) &&
-	        Objects.equals(goodsInSave.getOrderCapacity(), newGoods.getOrderCapacity()) &&
-	        Objects.equals(goodsInSave.getStock(), newGoods.getStock()) &&
-	        Objects.equals(goodsInSave.getImageUrl(), newGoods.getImageUrl()) &&
-	        
-	        // ★★★ ここが重要: createdAt と updatedAt がサービスによって設定されていることを検証 ★★★
-	        goodsInSave.getCreatedAt() != null && // null でないこと
-	        goodsInSave.getUpdatedAt() != null && // null でないこと
-	        // 時刻はテスト実行時のわずかなズレを考慮し、現在時刻から1秒以内であることを検証
-	        goodsInSave.getCreatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)) &&
-	        goodsInSave.getUpdatedAt().after(new Timestamp(System.currentTimeMillis() - 1000))
-	    ));
+		// 4. 検証
 
-	    // b. addGoods メソッドが返したオブジェクトが期待通りに設定されていることを確認 (変更なし)
-	    assertEquals(99, resultGoods.getId(), "返された商品のIDが期待通りでない");
-	    assertEquals(newGoods.getName(), resultGoods.getName(), "返された商品の名前が期待通りでない");
-	    assertEquals(newGoods.getPrice(), resultGoods.getPrice(), "返された商品の価格が期待通りでない");
-	    assertEquals(newGoods.getCategory(), resultGoods.getCategory(), "返された商品のカテゴリが期待通りでない");
-	    assertEquals(newGoods.getDescription(), resultGoods.getDescription(), "返された商品の説明が期待通りでない");
-	    assertEquals(newGoods.getOrderCapacity(), resultGoods.getOrderCapacity(), "返された商品の注文上限数が期待通りでない");
-	    assertEquals(newGoods.getStock(), resultGoods.getStock(), "返された商品の在庫数が期待通りでない");
-	    assertEquals(newGoods.getImageUrl(), resultGoods.getImageUrl(), "返された商品の画像URLが期待通りでない");
+		// a. goodsRepository.save() が、正しい内容のGoodsオブジェクトで1回呼び出されたことを確認
+		Mockito.verify(goodsRepository, Mockito.times(1)).save(Mockito.argThat(goodsInSave ->
+		// save()に渡される Goods オブジェクトのIDは、サービスが設定しないため **nullであるべき**
+		goodsInSave.getId() == null &&
 
-	    assertNotNull(resultGoods.getCreatedAt(), "返された商品の作成日時がnullである");
-	    assertNotNull(resultGoods.getUpdatedAt(), "返された商品の更新日時がnullである");
-	    assertTrue(resultGoods.getCreatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)), "返された商品の作成日時が古すぎる");
-	    assertTrue(resultGoods.getUpdatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)), "返された商品の更新日時が古すぎる");
+				Objects.equals(goodsInSave.getName(), newGoods.getName()) &&
+				Objects.equals(goodsInSave.getPrice(), newGoods.getPrice()) &&
+				Objects.equals(goodsInSave.getCategory(), newGoods.getCategory()) &&
+				Objects.equals(goodsInSave.getDescription(), newGoods.getDescription()) &&
+				Objects.equals(goodsInSave.getOrderCapacity(), newGoods.getOrderCapacity()) &&
+				Objects.equals(goodsInSave.getStock(), newGoods.getStock()) &&
+				Objects.equals(goodsInSave.getImageUrl(), newGoods.getImageUrl()) &&
+
+				// ★★★ ここが重要: createdAt と updatedAt がサービスによって設定されていることを検証 ★★★
+				goodsInSave.getCreatedAt() != null && // null でないこと
+				goodsInSave.getUpdatedAt() != null && // null でないこと
+				// 時刻はテスト実行時のわずかなズレを考慮し、現在時刻から1秒以内であることを検証
+				goodsInSave.getCreatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)) &&
+				goodsInSave.getUpdatedAt().after(new Timestamp(System.currentTimeMillis() - 1000))));
+
+		// b. addGoods メソッドが返したオブジェクトが期待通りに設定されていることを確認 (変更なし)
+		assertEquals(99, resultGoods.getId(), "返された商品のIDが期待通りでない");
+		assertEquals(newGoods.getName(), resultGoods.getName(), "返された商品の名前が期待通りでない");
+		assertEquals(newGoods.getPrice(), resultGoods.getPrice(), "返された商品の価格が期待通りでない");
+		assertEquals(newGoods.getCategory(), resultGoods.getCategory(), "返された商品のカテゴリが期待通りでない");
+		assertEquals(newGoods.getDescription(), resultGoods.getDescription(), "返された商品の説明が期待通りでない");
+		assertEquals(newGoods.getOrderCapacity(), resultGoods.getOrderCapacity(), "返された商品の注文上限数が期待通りでない");
+		assertEquals(newGoods.getStock(), resultGoods.getStock(), "返された商品の在庫数が期待通りでない");
+		assertEquals(newGoods.getImageUrl(), resultGoods.getImageUrl(), "返された商品の画像URLが期待通りでない");
+
+		assertNotNull(resultGoods.getCreatedAt(), "返された商品の作成日時がnullである");
+		assertNotNull(resultGoods.getUpdatedAt(), "返された商品の更新日時がnullである");
+		assertTrue(resultGoods.getCreatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)),
+				"返された商品の作成日時が古すぎる");
+		assertTrue(resultGoods.getUpdatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)),
+				"返された商品の更新日時が古すぎる");
+	}
+
+	@Test
+	@DisplayName("商品を追加 - 異常系: goodsRepository.save() が例外をスローする場合")
+	void testAddGoods_saveFails_throwsException() {
+		// 1. テストデータの準備
+		// addGoods に渡す Goods オブジェクト
+		Goods newGoods = new Goods();
+		newGoods.setName("重複する商品名"); // 例: ユニーク制約違反を想定
+		newGoods.setPrice(100);
+		newGoods.setCategory("テスト");
+		newGoods.setDescription("テスト用の商品");
+		newGoods.setOrderCapacity(1);
+		newGoods.setStock(10);
+		newGoods.setImageUrl("test.jpg");
+
+		// 2. モックの設定
+		// goodsRepository.save() が呼び出されたら、DataIntegrityViolationException をスローする
+		Mockito.when(goodsRepository.save(Mockito.any(Goods.class)))
+				.thenThrow(new DataIntegrityViolationException("データベースの制約違反が発生しました"));
+
+		// 3. テスト対象のメソッドを実行 & 検証
+		// addGoods メソッドが DataIntegrityViolationException をスローすることを確認
+		assertThrows(DataIntegrityViolationException.class, () -> {
+			goodsService.addGoods(newGoods);
+		}, "DataIntegrityViolationException がスローされるべきでした");
+
+		// 4. 検証
+		// goodsRepository.save が1回呼び出されたことを確認（例外発生後もverifyは可能）
+		Mockito.verify(goodsRepository, Mockito.times(1)).save(Mockito.argThat(goods ->
+		// ここでは、save に渡された goods の内容が正しいことを確認します。
+		// addGoods が createdAt と updatedAt を設定した Goods を渡すことを検証。
+		goods.getId() == null && // IDはまだnull
+				Objects.equals(goods.getName(), newGoods.getName()) &&
+				Objects.equals(goods.getPrice(), newGoods.getPrice()) &&
+				goods.getCreatedAt() != null &&
+				goods.getUpdatedAt() != null &&
+				goods.getCreatedAt().after(new Timestamp(System.currentTimeMillis() - 1000)) &&
+				goods.getUpdatedAt().after(new Timestamp(System.currentTimeMillis() - 1000))));
 	}
 	//@Test
 	//@DisplayName("画像ファイルを保存")
@@ -435,6 +542,45 @@ class GoodsServiceTest {
 		assertTrue(updatedGoods.getUpdatedAt().after(existingGoods.getCreatedAt()));
 	}
 
+	@Test
+	@DisplayName("商品詳細を編集 - 異常系: 編集対象の商品が見つからない")
+	void testEditGoods_notFound_throwsException() {
+		// 1. テストデータの準備
+		Integer nonExistentId = 999;
+		
+		GoodsEditForm editForm = new GoodsEditForm();
+		editForm.setName("存在しない商品の新しい名前");
+		editForm.setPrice(1);
+		editForm.setCategory("カテゴリー");
+		editForm.setDescription("説明");
+		editForm.setStock(1);
+		editForm.setImageUrl("url.jpg");
+		
+		// 2. モックの設定
+		//goodsRepository.findById(nonExistentId)が呼ばれたら、空のOptionalを返す
+		Mockito.when(goodsRepository.findById(nonExistentId)).thenReturn(Optional.empty());
+		
+		// 3.テスト対象のメソッドを実行 & 検証
+		//editGoodsメソッドがRuntimeExceptionをスローすることを確認
+		RuntimeException thrown = Assertions.assertThrows(RuntimeException.class,() ->{
+			goodsService.editGoods(nonExistentId, editForm);
+		},"RuntimeExceptionがスローされるべきでした");
+		
+		// 例外メッセージの内容を検証
+		assertEquals("商品が見つかりません",thrown.getMessage(),"例外メッセージが期待通りでない");
+		
+		// 4.検証
+		// a.goodsRepository.findById が正しいIdで一回呼び出されたことを確認
+		Mockito.verify(goodsRepository,Mockito.times(1)).findById(nonExistentId);
+		
+		// b.goodsRepository.saveが一度も呼び出されなかったことを確認
+		//商品が見つからない場合、saveは実行されないはずです
+		Mockito.verify(goodsRepository,Mockito.never()).save(Mockito.any(Goods.class));
+	}
+	
+	
+	
+	
 	@Test
 	@DisplayName("商品を削除 :正常系")
 	void testDeleteGoods() {

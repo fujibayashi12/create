@@ -4,6 +4,8 @@ import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +17,8 @@ import com.example.moattravel.repository.GoodsRepository;
 
 @Service
 public class GoodsService {
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(GoodsService.class); // この行を追加
 	private final GoodsRepository goodsRepository;
 
 	public GoodsService(GoodsRepository goodsRepository) {
@@ -73,7 +76,8 @@ public class GoodsService {
 
 			return goodsRepository.save(goods);
 		} else {
-			System.out.println("⚠ 商品 ID " + goodsId + " が見つかりません！");
+			//System.out.println("⚠ 商品 ID " + goodsId + " が見つかりません！");
+			logger.warn("⚠ 商品 ID {} が見つかりません！", goodsId);
 			throw new RuntimeException("商品が見つかりません");
 		}
 	}
